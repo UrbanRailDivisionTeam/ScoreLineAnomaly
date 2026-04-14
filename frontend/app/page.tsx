@@ -71,18 +71,26 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [noData, setNoData] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchData = () => {
     setLoading(true);
     setError(null);
+    setNoData(false);
     fetch(`${API_BASE}/api/full-analysis`)
       .then((res) => {
         if (!res.ok) throw new Error("API请求失败");
         return res.json();
       })
-      .then((data) => {
-        setData(data);
+      .then((result) => {
+        // 检查是否是"无数据"响应
+        if (result.error || result.data === null) {
+          setNoData(true);
+          setData(null);
+        } else {
+          setData(result);
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -144,7 +152,53 @@ export default function DashboardPage() {
     );
   }
 
-  if (!data) return null;
+  if (noData || !data) {
+    return (
+      <div className="min-h-screen bg-[#131313] flex flex-col items-center justify-center p-6">
+        <h1 className="font-display text-3xl md:text-4xl font-bold text-center text-[#E2E2E2] tracking-tight mb-8">
+          校线质量异常分析
+        </h1>
+        <div className="flex flex-col items-center gap-6">
+          <div className="text-center">
+            <div className="text-6xl mb-4">📊</div>
+            <p className="text-xl text-[#B8B8B8] mb-2">暂无数据</p>
+            <p className="text-sm text-[#666]">请上传 Excel 数据文件以查看分析结果</p>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleFileUpload} className="hidden" />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="px-6 py-3 font-body text-base font-medium text-white bg-[#C70019] hover:bg-[#93000F] rounded-none transition-all duration-300 flex items-center gap-2"
+            >
+              {uploading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  上传中...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  选择 Excel 文件
+                </>
+              )}
+            </button>
+            {uploadStatus && (
+              <p className={`text-sm font-body ${uploadStatus.includes("成功") ? "text-[#10b981]" : "text-[#ef4444]"}`}>
+                {uploadStatus}
+              </p>
+            )}
+          </div>
+          <p className="text-xs text-[#555] mt-4">支持 .xlsx 和 .xls 格式</p>
+        </div>
+      </div>
+    );
+  }
 
   const baseTheme = {
     backgroundColor: "transparent",
@@ -512,7 +566,7 @@ export default function DashboardPage() {
       {/* 标题栏 */}
       <header className="mb-6">
         <h1 className="font-display text-3xl md:text-4xl font-bold text-center text-[#E2E2E2] tracking-tight">
-          校线质量异常分析大屏
+          校线质量异常分析
         </h1>
         <div className="flex flex-col items-center mt-4 gap-3">
           <div className="flex items-center gap-4">

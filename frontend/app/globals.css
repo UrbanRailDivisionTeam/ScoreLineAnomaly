@@ -40,7 +40,7 @@ body {
 
 /* Typography Classes */
 .font-display {
-  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-family: "Noto Serif SC", "Space Grotesk", "Inter", serif;
 }
 
 .font-body {

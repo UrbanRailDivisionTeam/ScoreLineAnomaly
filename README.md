@@ -2,6 +2,10 @@
 
 基于 Python FastAPI + Next.js 的校线质量异常数据可视化分析系统。支持数据上传、统计分析和 SPC 过程监控。
 
+## 界面预览
+
+![校线质量异常分析大屏](screenshot_fullpage.png)
+
 ## 功能特性
 
 ### 1. 核心 KPI 指标
@@ -209,8 +213,7 @@ npm run dev -- --port 3001
 │   │   ├── page.tsx               # 主仪表盘页面
 │   │   ├── layout.tsx             # 布局组件
 │   │   └── globals.css            # 全局样式
-│   ├── package.json               # Node 依赖
-│   └── screenshot.js              # 截图脚本
+│   └── package.json               # Node 依赖
 ├── scripts/                         # 启动脚本
 │   ├── 启动校线分析系统.bat        # 启动脚本
 │   └── 停止校线分析系统.bat        # 停止脚本
