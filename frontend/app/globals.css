@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+:root {
+  /* Primary & Alerts - CRRC Red "Pulse" */
+  --primary: #C70019;
+  --primary-dark: #93000F;
+  --primary-glow: rgba(199, 0, 25, 0.2);
+
+  /* Surface Hierarchy (Ink Tones) */
+  --background: #131313;
+  --surface-lowest: #0E0E0E;
+  --surface-low: #1B1B1B;
+  --surface: #242424;
+  --surface-high: #2A2A2A;
+  --surface-highest: #333333;
+
+  /* Accents & Text */
+  --on-surface: #E2E2E2;
+  --on-surface-variant: #B8B8B8;
+  --surface-variant: rgba(53, 53, 53, 0.4);
+  --outline-variant: rgba(93, 63, 60, 0.15);
+
+  /* Semantic Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --accent: #3b82f6;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--on-surface);
+}
+
+body {
+  background: var(--background);
+  color: var(--on-surface);
+  font-family: "Inter", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+}
+
+/* Typography Classes */
+.font-display {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+}
+
+.font-body {
+  font-family: "Inter", "Microsoft YaHei", sans-serif;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-low);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-high);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--surface-highest);
+}
+
+/* 数字字体 */
+.font-number {
+  font-family: "DIN Alternate", "Roboto Mono", "Space Grotesk", monospace;
+}
+
+/* Glassmorphism Effect */
+.glass-panel {
+  background: var(--surface-variant);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+}
+
+/* Primary Button with Inner Glow */
+.btn-primary {
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary:hover {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 0 20px var(--primary-glow);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background: #494646;
+  color: #ffffff;
+}
+
+/* No-Line Card Effect */
+.card-elevated {
+  background: var(--surface-high);
+}
+
+.card-recessed {
+  background: var(--surface-low);
+}
+
+/* Telemetry Chips with Subtle Glow */
+.chip-active {
+  background: rgba(199, 0, 25, 0.2);
+  box-shadow: 0 0 12px rgba(199, 0, 25, 0.3);
+}
+
+/* Ambient Shadow for Floating Components */
+.shadow-ambient {
+  box-shadow: 0 30px 60px rgba(226, 226, 226, 0.06);
+}
+
+/* Input Focus State - Bottom Edge Glow */
+.input-focus-glow:focus {
+  outline: none;
+  border-bottom: 2px solid var(--primary);
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+/* Hover state for dark containers */
+.surface-bright:hover {
+  background: var(--surface-highest);
+}
