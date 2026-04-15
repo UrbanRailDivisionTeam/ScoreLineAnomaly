@@ -1,30 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  /* Primary & Alerts - CRRC Red "Pulse" */
-  --primary: #C70019;
-  --primary-dark: #93000F;
-  --primary-glow: rgba(199, 0, 25, 0.2);
+  /* Surface (Background) - Cloud Dancer */
+  --background: #f8f9fa;
+  --surface-lowest: #ffffff;
+  --surface-container-low: #f3f4f5;
+  --surface-container: #ebecef;
+  --surface-container-high: #e1e3e4;
+  --surface-container-highest: #d4d7d9;
 
-  /* Surface Hierarchy (Ink Tones) */
-  --background: #131313;
-  --surface-lowest: #0E0E0E;
-  --surface-low: #1B1B1B;
-  --surface: #242424;
-  --surface-high: #2A2A2A;
-  --surface-highest: #333333;
+  /* Primary - Corporate Crimson */
+  --primary: #9a0011;
+  --primary-container: #c70019;
+  --on-primary: #ffffff;
+  --on-primary-container: #ffffff;
 
-  /* Accents & Text */
-  --on-surface: #E2E2E2;
-  --on-surface-variant: #B8B8B8;
-  --surface-variant: rgba(53, 53, 53, 0.4);
-  --outline-variant: rgba(93, 63, 60, 0.15);
+  /* Secondary - Muted Rose */
+  --secondary: #825154;
+  --secondary-container: #febfc2;
+  --on-secondary: #ffffff;
+  --on-secondary-container: #3f1d20;
+
+  /* On Surface - Editorial Softness */
+  --on-surface: #191c1d;
+  --on-surface-variant: #4f4440;
+  --outline: #81736c;
+  --outline-variant: rgba(130, 81, 84, 0.15);
 
   /* Semantic Colors */
   --success: #10b981;
   --warning: #f59e0b;
-  --danger: #ef4444;
+  --danger: #c70019;
   --accent: #3b82f6;
+
+  /* Ambient Shadow - Warm tint */
+  --shadow-color: rgba(65, 0, 3, 0.06);
 }
 
 @theme inline {
@@ -35,16 +45,23 @@
 body {
   background: var(--background);
   color: var(--on-surface);
-  font-family: "Inter", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: "Manrope", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
 }
 
 /* Typography Classes */
 .font-display {
-  font-family: "Noto Serif SC", "Space Grotesk", "Inter", serif;
+  font-family: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", serif;
 }
 
 .font-body {
-  font-family: "Inter", "Microsoft YaHei", sans-serif;
+  font-family: "Manrope", "Microsoft YaHei", sans-serif;
+}
+
+/* Labels - Uppercase with letter-spacing */
+.label-uppercase {
+  font-family: "Manrope", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* 滚动条样式 */
@@ -54,74 +71,131 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--surface-low);
+  background: var(--surface-container-low);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--surface-high);
+  background: var(--surface-container-high);
   border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--surface-highest);
+  background: var(--surface-container-highest);
 }
 
 /* 数字字体 */
 .font-number {
-  font-family: "DIN Alternate", "Roboto Mono", "Space Grotesk", monospace;
+  font-family: "Manrope", "DIN Alternate", sans-serif;
 }
 
-/* Glassmorphism Effect */
+/* Glassmorphism Effect - Warm tint */
 .glass-panel {
-  background: var(--surface-variant);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
+  background: rgba(248, 249, 250, 0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 
-/* Primary Button with Inner Glow */
+/* Primary Button - Crimson with gradient sheen */
 .btn-primary {
-  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
+  color: var(--on-primary);
+  border-radius: 8px;
+  box-shadow: none;
 }
 
 .btn-primary:hover {
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 0 20px var(--primary-glow);
+  background: linear-gradient(135deg, var(--primary-container) 0%, var(--primary) 100%);
+  box-shadow: 0 4px 12px rgba(154, 0, 17, 0.25);
 }
 
-/* Secondary Button */
+/* Secondary Button - Ghost style */
 .btn-secondary {
-  background: #494646;
-  color: #ffffff;
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
-/* No-Line Card Effect */
+.btn-secondary:hover {
+  border-color: var(--primary);
+  background: rgba(154, 0, 17, 0.04);
+}
+
+/* Tertiary Button - Muted Rose */
+.btn-tertiary {
+  background: transparent;
+  color: var(--secondary);
+  border-radius: 8px;
+}
+
+.btn-tertiary:hover {
+  background: rgba(130, 81, 84, 0.08);
+}
+
+/* No-Line Card Effect - layering instead of borders */
+.card-layered {
+  background: var(--surface-lowest);
+  border-radius: 8px;
+}
+
 .card-elevated {
-  background: var(--surface-high);
+  background: var(--surface-container-low);
+  border-radius: 8px;
 }
 
 .card-recessed {
-  background: var(--surface-low);
+  background: var(--surface-container-high);
+  border-radius: 8px;
 }
 
-/* Telemetry Chips with Subtle Glow */
-.chip-active {
-  background: rgba(199, 0, 25, 0.2);
-  box-shadow: 0 0 12px rgba(199, 0, 25, 0.3);
+/* Active Card State - 4px left accent */
+.card-active {
+  border-left: 4px solid var(--primary-container);
 }
 
-/* Ambient Shadow for Floating Components */
+/* Status Chips */
+.chip-neutral {
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+
+.chip-alert {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+
+/* Ambient Shadow - Warm brand color tint */
 .shadow-ambient {
-  box-shadow: 0 30px 60px rgba(226, 226, 226, 0.06);
+  box-shadow: 0 32px 64px var(--shadow-color);
 }
 
-/* Input Focus State - Bottom Edge Glow */
-.input-focus-glow:focus {
-  outline: none;
+/* Input Fields - Signature line style */
+.input-field {
+  background: var(--surface-container-high);
+  border: none;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  background: var(--surface-lowest);
   border-bottom: 2px solid var(--primary);
-  box-shadow: 0 2px 8px var(--primary-glow);
+  outline: none;
 }
 
-/* Hover state for dark containers */
-.surface-bright:hover {
-  background: var(--surface-highest);
+/* Hover state for light containers */
+.surface-hover:hover {
+  background: var(--surface-container-high);
+}
+
+/* No dividers - use spacing instead */
+.no-divider > * + * {
+  margin-top: 16px;
+}
+
+/* Section spacing */
+.section-spacing {
+  padding: 24px;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import ReactECharts from "echarts-for-react";
 import * as echarts from "echarts";
 
@@ -49,20 +49,25 @@ interface FullAnalysisData {
   line_segments: Array<{ 起始位置: string; 终止位置: string; value: number }>;
 }
 
-// 工业配色方案
+// 温暖科技配色方案 - Ethereal Precision
 const COLORS = {
-  primary: "#C70019",      // CRRC Red
-  primaryDark: "#93000F",
-  background: "#131313",
-  surfaceLow: "#1B1B1B",
-  surfaceHigh: "#2A2A2A",
-  onSurface: "#E2E2E2",
-  muted: "#B8B8B8",
-  accent: "#3b82f6",
+  primary: "#9a0011",
+  primaryContainer: "#c70019",
+  secondary: "#825154",
+  secondaryContainer: "#febfc2",
+  background: "#f8f9fa",
+  surfaceLowest: "#ffffff",
+  surfaceContainerLow: "#f3f4f5",
+  surfaceContainer: "#ebecef",
+  surfaceContainerHigh: "#e1e3e4",
+  onSurface: "#191c1d",
+  onSurfaceVariant: "#4f4440",
+  outline: "#81736c",
   success: "#10b981",
   warning: "#f59e0b",
-  danger: "#ef4444",
-  chartPalette: ["#C70019", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16"],
+  danger: "#c70019",
+  accent: "#3b82f6",
+  chartPalette: ["#c70019", "#825154", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#06b6d4"],
 };
 
 export default function DashboardPage() {
@@ -84,7 +89,6 @@ export default function DashboardPage() {
         return res.json();
       })
       .then((result) => {
-        // 检查是否是"无数据"响应
         if (result.error || result.data === null) {
           setNoData(true);
           setData(null);
@@ -128,13 +132,13 @@ export default function DashboardPage() {
 
   if (loading && !data) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#131313]">
+      <div className="flex items-center justify-center h-screen bg-[#f8f9fa]">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 relative">
-            <div className="absolute inset-0 border-2 border-[#C70019] animate-pulse"></div>
-            <div className="absolute inset-2 border-2 border-[#C70019]/50 animate-ping"></div>
+            <div className="absolute inset-0 border-2 border-[#c70019] animate-pulse rounded-full"></div>
+            <div className="absolute inset-2 border-2 border-[#c70019]/50 animate-ping rounded-full"></div>
           </div>
-          <p className="text-xl font-display text-[#E2E2E2]">数据加载中...</p>
+          <p className="text-xl font-body text-[#4f4440]">数据加载中...</p>
         </div>
       </div>
     );
@@ -142,11 +146,10 @@ export default function DashboardPage() {
 
   if (error && !data) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#131313]">
+      <div className="flex items-center justify-center h-screen bg-[#f8f9fa]">
         <div className="text-center">
-          <p className="text-xl mb-2 text-[#C70019]">加载失败</p>
-          <p className="text-[#B8B8B8]">{error}</p>
-          <p className="text-sm mt-4 text-[#B8B8B8]">请确保后端服务运行在 http://127.0.0.1:8001</p>
+          <p className="text-xl mb-2 text-[#c70019] font-display">加载失败</p>
+          <p className="text-[#4f4440] font-body">请确保后端服务运行在 http://127.0.0.1:8001</p>
         </div>
       </div>
     );
@@ -154,22 +157,22 @@ export default function DashboardPage() {
 
   if (noData || !data) {
     return (
-      <div className="min-h-screen bg-[#131313] flex flex-col items-center justify-center p-6">
-        <h1 className="font-display text-3xl md:text-4xl font-bold text-center text-[#E2E2E2] tracking-tight mb-8">
+      <div className="min-h-screen bg-[#f8f9fa] flex flex-col items-center justify-center p-6">
+        <h1 className="font-display text-4xl md:text-5xl font-semibold text-center text-[#191c1d] tracking-tight mb-8" style={{ letterSpacing: "-0.02em" }}>
           校线质量异常分析
         </h1>
         <div className="flex flex-col items-center gap-6">
           <div className="text-center">
             <div className="text-6xl mb-4">📊</div>
-            <p className="text-xl text-[#B8B8B8] mb-2">暂无数据</p>
-            <p className="text-sm text-[#666]">请上传 Excel 数据文件以查看分析结果</p>
+            <p className="text-xl text-[#4f4440] mb-2 font-body">暂无数据</p>
+            <p className="text-sm text-[#81736c]">请上传 Excel 数据文件以查看分析结果</p>
           </div>
           <div className="flex flex-col items-center gap-3">
             <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleFileUpload} className="hidden" />
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="px-6 py-3 font-body text-base font-medium text-white bg-[#C70019] hover:bg-[#93000F] rounded-none transition-all duration-300 flex items-center gap-2"
+              className="px-6 py-3 font-body text-base font-medium text-white rounded-lg transition-all duration-300 btn-primary flex items-center gap-2"
             >
               {uploading ? (
                 <>
@@ -189,12 +192,12 @@ export default function DashboardPage() {
               )}
             </button>
             {uploadStatus && (
-              <p className={`text-sm font-body ${uploadStatus.includes("成功") ? "text-[#10b981]" : "text-[#ef4444]"}`}>
+              <p className={`text-sm font-body ${uploadStatus.includes("成功") ? "text-[#10b981]" : "text-[#c70019]"}`}>
                 {uploadStatus}
               </p>
             )}
           </div>
-          <p className="text-xs text-[#555] mt-4">支持 .xlsx 和 .xls 格式</p>
+          <p className="text-xs text-[#81736c] mt-4 font-body">支持 .xlsx 和 .xls 格式</p>
         </div>
       </div>
     );
@@ -202,20 +205,20 @@ export default function DashboardPage() {
 
   const baseTheme = {
     backgroundColor: "transparent",
-    textStyle: { color: COLORS.muted },
+    textStyle: { color: COLORS.onSurfaceVariant },
     title: { textStyle: { color: COLORS.onSurface } },
-    legend: { textStyle: { color: COLORS.muted } },
+    legend: { textStyle: { color: COLORS.onSurfaceVariant } },
   };
 
-  // 1. KPI Cards
+  // KPI Cards
   const kpiCards = [
-    { label: "总异常数", value: data.kpi.total_anomalies, unit: "条", accent: COLORS.primary },
+    { label: "总异常数", value: data.kpi.total_anomalies, unit: "条", accent: COLORS.primaryContainer },
     { label: "缺失项数", value: data.missing_stats.missing_count, unit: "条", accent: COLORS.warning },
     { label: "有效分析数", value: data.kpi.total_filtered || (data.kpi.total_anomalies - data.missing_stats.missing_count), unit: "条", accent: COLORS.success },
     { label: "平均处理时长", value: data.kpi.avg_process_hours, unit: "小时", accent: COLORS.accent },
   ];
 
-  // 2. 每节车平均异常数量趋势（SPC风格）
+  // 图表配置
   const perCarTrendData = data.per_car_trend || [];
   const avgValues = perCarTrendData.map(d => d.avg_per_car);
   const avg = avgValues.length > 0 ? avgValues.reduce((a, b) => a + b, 0) / avgValues.length : 0;
@@ -226,10 +229,10 @@ export default function DashboardPage() {
   const perCarTrendOption = {
     ...baseTheme,
     tooltip: { trigger: "axis" },
-    legend: { data: ["每节车均值", "控制限"], textStyle: { color: COLORS.muted }, top: "3%" },
+    legend: { data: ["每节车均值", "控制限"], textStyle: { color: COLORS.onSurfaceVariant }, top: "3%" },
     grid: { left: "3%", right: "4%", bottom: "3%", top: "15%", containLabel: true },
-    xAxis: { type: "category", data: perCarTrendData.map(d => d.年月半月), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, fontSize: 10, rotate: 15 }, name: "半月" },
-    yAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } }, name: "均值" },
+    xAxis: { type: "category", data: perCarTrendData.map(d => d.年月半月), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, fontSize: 10, rotate: 15 }, name: "半月" },
+    yAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } }, name: "均值" },
     series: [
       {
         name: "每节车均值",
@@ -237,174 +240,141 @@ export default function DashboardPage() {
         smooth: true,
         data: perCarTrendData.map(d => d.avg_per_car),
         lineStyle: { color: COLORS.accent, width: 2 },
-        itemStyle: {
-          color: (params: any) => {
-            const value = params.value;
-            return value > ucl || value < lcl ? COLORS.danger : COLORS.accent;
-          }
-        },
+        itemStyle: { color: (params: any) => { const value = params.value; return value > ucl || value < lcl ? COLORS.danger : COLORS.accent; } },
         areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(59,130,246,0.3)" }, { offset: 1, color: "rgba(59,130,246,0.05)" }] } },
-        markLine: {
-          silent: true,
-          symbol: "none",
-          lineStyle: { type: "dashed", width: 1 },
-          data: [
-            { type: "average", name: "均值(CL)", yAxis: avg, lineStyle: { color: COLORS.accent } },
-            { type: "average", name: "UCL", yAxis: ucl, lineStyle: { color: COLORS.danger } },
-            { type: "average", name: "LCL", yAxis: lcl, lineStyle: { color: COLORS.success } },
-          ],
-          label: { formatter: "{b}: {c}", color: COLORS.muted, fontSize: 9 }
-        }
+        markLine: { silent: true, symbol: "none", lineStyle: { type: "dashed", width: 1 }, data: [
+          { type: "average", name: "均值(CL)", yAxis: avg, lineStyle: { color: COLORS.accent } },
+          { type: "average", name: "UCL", yAxis: ucl, lineStyle: { color: COLORS.danger } },
+          { type: "average", name: "LCL", yAxis: lcl, lineStyle: { color: COLORS.success } },
+        ], label: { formatter: "{b}: {c}", color: COLORS.onSurfaceVariant, fontSize: 9 } }
       }
     ],
   };
 
-  // 3. 状态漏斗
   const statusOption = {
     ...baseTheme,
     tooltip: { trigger: "item" },
-    legend: { bottom: "5%", textStyle: { color: COLORS.muted } },
+    legend: { bottom: "5%", textStyle: { color: COLORS.onSurfaceVariant } },
     series: [{ type: "funnel", left: "10%", top: 20, bottom: 50, width: "80%", min: 0, max: 100, minSize: "0%", maxSize: "100%", sort: "descending", gap: 2, label: { show: true, position: "inside", color: "#fff" }, labelLine: { show: false }, itemStyle: { borderColor: COLORS.background, borderWidth: 1 }, data: data.status_distribution.stages.map((s, i) => ({ name: s.name, value: s.count, itemStyle: { color: COLORS.chartPalette[i % COLORS.chartPalette.length] } })) }],
   };
 
-  // 4. 项目分布柱状图
   const projectOption = {
     ...baseTheme,
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "4%", bottom: "25%", top: "3%", containLabel: true },
-    xAxis: { type: "category", data: data.projects.map(p => p.project), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, fontSize: 9, rotate: 30 }, name: "项目" },
-    yAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } }, name: "数量" },
+    xAxis: { type: "category", data: data.projects.map(p => p.project), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, fontSize: 9, rotate: 30 }, name: "项目" },
+    yAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } }, name: "数量" },
     series: [{ type: "bar", data: data.projects.map((p, i) => ({ value: p.count, itemStyle: { color: COLORS.chartPalette[i % COLORS.chartPalette.length] }, label: { show: true, position: "top", color: "#fff", fontSize: 9 } })), barWidth: "60%" }],
   };
 
-  // 5. 列车Top15
   const trainOption = {
     ...baseTheme,
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "4%", bottom: "3%", top: "3%", containLabel: true },
-    xAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
-    yAxis: { type: "category", data: data.trains.map(t => t.train).reverse(), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, fontSize: 10 } },
-    series: [{ type: "bar", data: data.trains.map(t => t.count).reverse(), itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: "#1e3a5f" }, { offset: 1, color: COLORS.accent }] } }, barWidth: "55%"}],
+    xAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
+    yAxis: { type: "category", data: data.trains.map(t => t.train).reverse(), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, fontSize: 10 } },
+    series: [{ type: "bar", data: data.trains.map(t => t.count).reverse(), itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: "#fce4e6" }, { offset: 1, color: COLORS.primaryContainer }] } }, barWidth: "55%"}],
   };
 
-  // 6. 产品构型树图
   const configOption = {
     ...baseTheme,
     tooltip: { trigger: "item", formatter: "{b}: {c}" },
     series: [{ type: "treemap", width: "95%", height: "85%", top: "5%", bottom: "5%", left: "2.5%", right: "2.5%", label: { show: true, formatter: "{b}", color: "#fff", fontSize: 11 }, itemStyle: { borderColor: COLORS.background, borderWidth: 2, gapWidth: 2 }, data: data.configurations.map((c, i) => ({ name: c.config, value: c.count, itemStyle: { color: COLORS.chartPalette[i % COLORS.chartPalette.length] } })), levels: [{ itemStyle: { borderColor: COLORS.background, borderWidth: 4, gapWidth: 4 } }] }],
   };
 
-  // 7. 项目vs构型热力图
   const heatmapOption = {
     ...baseTheme,
     tooltip: { trigger: "item" },
     grid: { left: "2%", right: "4%", bottom: "15%", top: "5%" },
-    xAxis: { type: "category", data: data.project_config_heatmap.configs?.slice(0, 10) || [], axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, rotate: 30, fontSize: 9 }, splitArea: { show: true, areaStyle: { color: [COLORS.surfaceLow, COLORS.background] } } },
-    yAxis: { type: "category", data: data.project_config_heatmap.projects?.slice(0, 8) || [], axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, fontSize: 10 }, splitArea: { show: true, areaStyle: { color: [COLORS.surfaceLow, COLORS.background] } } },
-    visualMap: { min: 0, max: 50, calculable: true, orient: "horizontal", left: "center", bottom: "5%", textStyle: { color: COLORS.muted }, inRange: { color: [COLORS.surfaceHigh, COLORS.accent, COLORS.warning, COLORS.danger] } },
+    xAxis: { type: "category", data: data.project_config_heatmap.configs?.slice(0, 10) || [], axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, rotate: 30, fontSize: 9 }, splitArea: { show: true, areaStyle: { color: [COLORS.surfaceContainerLow, COLORS.background] } } },
+    yAxis: { type: "category", data: data.project_config_heatmap.projects?.slice(0, 8) || [], axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, fontSize: 10 }, splitArea: { show: true, areaStyle: { color: [COLORS.surfaceContainerLow, COLORS.background] } } },
+    visualMap: { min: 0, max: 50, calculable: true, orient: "horizontal", left: "center", bottom: "5%", textStyle: { color: COLORS.onSurfaceVariant }, inRange: { color: [COLORS.surfaceContainerHigh, COLORS.accent, COLORS.warning, COLORS.danger] } },
     series: [{ type: "heatmap", data: (data.project_config_heatmap.data || []).map(d => [data.project_config_heatmap.configs?.indexOf(d['产品构型名称.构型项名称']) || 0, data.project_config_heatmap.projects?.indexOf(d['项目号.项目简称']) || 0, d.count]), label: { show: true, color: "#fff", fontSize: 10 }, emphasis: { itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.5)" } } }],
   };
 
-  // 8. 现象分类帕累托
   const phenomenonData = data.phenomena.slice(0, 15);
   const phenomenonTotal = phenomenonData.reduce((sum, p) => sum + p.count, 0);
   let phenomenonCumulative = 0;
-  const phenomenonCumulativeData = phenomenonData.map(p => {
-    phenomenonCumulative += p.count;
-    return Math.round(phenomenonCumulative / phenomenonTotal * 100);
-  });
+  const phenomenonCumulativeData = phenomenonData.map(p => { phenomenonCumulative += p.count; return Math.round(phenomenonCumulative / phenomenonTotal * 100); });
 
   const phenomenonOption = {
     ...baseTheme,
     tooltip: { trigger: "axis" },
-    legend: { data: ["数量", "累计占比"], textStyle: { color: COLORS.muted }, top: "3%" },
+    legend: { data: ["数量", "累计占比"], textStyle: { color: COLORS.onSurfaceVariant }, top: "3%" },
     grid: { left: "3%", right: "4%", bottom: "15%", top: "18%" },
-    xAxis: { type: "category", data: phenomenonData.map(f => f.phenomenon), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, rotate: 25, fontSize: 9 } },
-    yAxis: [{ type: "value", name: "数量", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } }, { type: "value", name: "累计%", min: 0, max: 100, axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { show: false } }],
+    xAxis: { type: "category", data: phenomenonData.map(f => f.phenomenon), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, rotate: 25, fontSize: 9 } },
+    yAxis: [{ type: "value", name: "数量", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } }, { type: "value", name: "累计%", min: 0, max: 100, axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { show: false } }],
     series: [{ name: "数量", type: "bar", data: phenomenonData.map(f => f.count), itemStyle: { color: "#8b5cf6" } }, { name: "累计占比", type: "line", yAxisIndex: 1, data: phenomenonCumulativeData, lineStyle: { color: COLORS.warning }, itemStyle: { color: COLORS.warning }, smooth: true }],
   };
 
-  // 9. 失效模式帕累托
   const failureModeData = data.failure_modes.slice(0, 15);
   const failureModeTotal = failureModeData.reduce((sum, p) => sum + p.count, 0);
   let failureModeCumulative = 0;
-  const failureModeCumulativeData = failureModeData.map(p => {
-    failureModeCumulative += p.count;
-    return Math.round(failureModeCumulative / failureModeTotal * 100);
-  });
+  const failureModeCumulativeData = failureModeData.map(p => { failureModeCumulative += p.count; return Math.round(failureModeCumulative / failureModeTotal * 100); });
 
   const failureModeOption = {
     ...baseTheme,
     tooltip: { trigger: "axis" },
-    legend: { data: ["数量", "累计占比"], textStyle: { color: COLORS.muted }, top: "3%" },
+    legend: { data: ["数量", "累计占比"], textStyle: { color: COLORS.onSurfaceVariant }, top: "3%" },
     grid: { left: "3%", right: "4%", bottom: "15%", top: "18%" },
-    xAxis: { type: "category", data: failureModeData.map(f => f.mode), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, rotate: 25, fontSize: 9 } },
-    yAxis: [{ type: "value", name: "数量", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } }, { type: "value", name: "累计%", min: 0, max: 100, axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { show: false } }],
+    xAxis: { type: "category", data: failureModeData.map(f => f.mode), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, rotate: 25, fontSize: 9 } },
+    yAxis: [{ type: "value", name: "数量", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } }, { type: "value", name: "累计%", min: 0, max: 100, axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { show: false } }],
     series: [{ name: "数量", type: "bar", data: failureModeData.map(f => f.count), itemStyle: { color: COLORS.accent } }, { name: "累计占比", type: "line", yAxisIndex: 1, data: failureModeCumulativeData, lineStyle: { color: COLORS.warning }, itemStyle: { color: COLORS.warning }, smooth: true }],
   };
 
-  // 10. 失效原因帕累托
   const failureCauseData = data.failure_causes_pareto.slice(0, 15);
   const failureCauseTotal = failureCauseData.reduce((sum, p) => sum + p.count, 0);
   let failureCauseCumulative = 0;
-  const failureCauseCumulativeData = failureCauseData.map(p => {
-    failureCauseCumulative += p.count;
-    return Math.round(failureCauseCumulative / failureCauseTotal * 100);
-  });
+  const failureCauseCumulativeData = failureCauseData.map(p => { failureCauseCumulative += p.count; return Math.round(failureCauseCumulative / failureCauseTotal * 100); });
 
   const failureCauseOption = {
     ...baseTheme,
     tooltip: { trigger: "axis" },
-    legend: { data: ["数量", "累计占比"], textStyle: { color: COLORS.muted }, top: "3%" },
+    legend: { data: ["数量", "累计占比"], textStyle: { color: COLORS.onSurfaceVariant }, top: "3%" },
     grid: { left: "3%", right: "4%", bottom: "15%", top: "18%" },
-    xAxis: { type: "category", data: failureCauseData.map(f => f.cause), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, rotate: 25, fontSize: 9 } },
-    yAxis: [{ type: "value", name: "数量", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } }, { type: "value", name: "累计%", min: 0, max: 100, axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { show: false } }],
+    xAxis: { type: "category", data: failureCauseData.map(f => f.cause), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, rotate: 25, fontSize: 9 } },
+    yAxis: [{ type: "value", name: "数量", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } }, { type: "value", name: "累计%", min: 0, max: 100, axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { show: false } }],
     series: [{ name: "数量", type: "bar", data: failureCauseData.map(f => f.count), itemStyle: { color: COLORS.danger } }, { name: "累计占比", type: "line", yAxisIndex: 1, data: failureCauseCumulativeData, lineStyle: { color: COLORS.warning }, itemStyle: { color: COLORS.warning }, smooth: true }],
   };
 
-  // 11. 各项目缺失项统计
   const missingByProjectOption = {
     ...baseTheme,
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "4%", bottom: "20%", top: "3%", containLabel: true },
-    xAxis: { type: "category", data: data.missing_by_project.map(p => p.project), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, fontSize: 9, rotate: 30 } },
-    yAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } }, name: "缺失数" },
+    xAxis: { type: "category", data: data.missing_by_project.map(p => p.project), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, fontSize: 9, rotate: 30 } },
+    yAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } }, name: "缺失数" },
     series: [{ type: "bar", data: data.missing_by_project.map((p, i) => ({ value: p.count, itemStyle: { color: COLORS.chartPalette[i % COLORS.chartPalette.length] }, label: { show: true, position: "top", color: "#fff", fontSize: 9, formatter: (params: any) => `${data.missing_by_project[params.dataIndex]?.rate || 0}%` } })), barWidth: "50%" }],
   };
 
-  // 12. 桑基图
   const sankeyOption = {
     ...baseTheme,
     tooltip: { trigger: "item" },
     series: [{ type: "sankey", layout: "none", nodeAlign: "left", nodeGap: 12, nodeWidth: 20, lineStyle: { color: "gradient", curveness: 0.5 }, label: { color: "#fff", fontSize: 11 }, data: data.sankey.nodes?.map(n => ({ name: n.name })) || [], links: (data.sankey.links || []).map(l => ({ source: l.source, target: l.target, value: l.value })), emphasis: { focus: "adjacency" } }],
   };
 
-  // 13. 责任分类饼图
   const responsibilityOption = {
     ...baseTheme,
     tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
-    legend: { orient: "vertical", right: "2%", top: "center", textStyle: { color: COLORS.muted } },
+    legend: { orient: "vertical", right: "2%", top: "center", textStyle: { color: COLORS.onSurfaceVariant } },
     series: [{ type: "pie", radius: ["45%", "75%"], center: ["35%", "50%"], avoidLabelOverlap: false, itemStyle: { borderColor: COLORS.background, borderWidth: 3 }, label: { show: false }, emphasis: { label: { show: true, fontSize: 15, fontWeight: "bold" } }, data: Object.entries(data.kpi.responsibility).map(([name, info], i) => ({ value: info.count, name, itemStyle: { color: COLORS.chartPalette[i % COLORS.chartPalette.length] } })) }],
   };
 
-  // 14. 责任单位红黑榜
   const unitRankingOption = {
     ...baseTheme,
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "4%", bottom: "3%", top: "3%", containLabel: true },
-    xAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
-    yAxis: { type: "category", data: data.responsibility.top_units.map(u => u.unit).reverse(), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, fontSize: 10 } },
-    series: [{ type: "bar", data: data.responsibility.top_units.map(u => u.count).reverse(), itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: "#7c2d12" }, { offset: 1, color: COLORS.danger }] } }, barWidth: "55%"}],
+    xAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
+    yAxis: { type: "category", data: data.responsibility.top_units.map(u => u.unit).reverse(), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, fontSize: 10 } },
+    series: [{ type: "bar", data: data.responsibility.top_units.map(u => u.count).reverse(), itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: "#fce4e6" }, { offset: 1, color: COLORS.danger }] } }, barWidth: "55%"}],
   };
 
-  // 15. 责任单位vs失效原因堆叠
   const unitFailureOption = {
     ...baseTheme,
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    legend: { data: data.unit_failure_cross.modes?.slice(0, 6) || [], textStyle: { color: COLORS.muted, fontSize: 9 }, top: "3%" },
+    legend: { data: data.unit_failure_cross.modes?.slice(0, 6) || [], textStyle: { color: COLORS.onSurfaceVariant, fontSize: 9 }, top: "3%" },
     grid: { left: "3%", right: "4%", bottom: "15%", top: "18%" },
-    xAxis: { type: "category", data: data.unit_failure_cross.units?.slice(0, 8) || [], axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, rotate: 20, fontSize: 9 } },
-    yAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
+    xAxis: { type: "category", data: data.unit_failure_cross.units?.slice(0, 8) || [], axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, rotate: 20, fontSize: 9 } },
+    yAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
     series: data.unit_failure_cross.modes?.slice(0, 6).map((mode, i) => ({
       name: mode, type: "bar", stack: "total", itemStyle: { color: COLORS.chartPalette[i % COLORS.chartPalette.length] },
       data: data.unit_failure_cross.units?.slice(0, 8).map(unit => {
@@ -414,167 +384,161 @@ export default function DashboardPage() {
     })) || [],
   };
 
-  // 16. 时效分布
   const efficiencyOption = {
     ...baseTheme,
     tooltip: { trigger: "axis" },
     grid: { left: "3%", right: "4%", bottom: "3%", top: "3%", containLabel: true },
-    xAxis: { type: "category", data: data.efficiency.distribution.map(d => d.range), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted } },
-    yAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
+    xAxis: { type: "category", data: data.efficiency.distribution.map(d => d.range), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant } },
+    yAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
     series: [{ type: "bar", data: data.efficiency.distribution.map(d => d.count), itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: COLORS.danger }, { offset: 1, color: COLORS.success }] } }, barWidth: "45%"}],
   };
 
-  // 17. 班组对标气泡
   const teamBubbleOption = {
     ...baseTheme,
     tooltip: { trigger: "item", formatter: "{b}: 工单{c}, 平均{h}小时" },
     grid: { left: "3%", right: "4%", bottom: "10%", top: "5%" },
-    xAxis: { type: "value", name: "工单数", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
-    yAxis: { type: "value", name: "平均时长(h)", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
+    xAxis: { type: "value", name: "工单数", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
+    yAxis: { type: "value", name: "平均时长(h)", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
     series: [{ type: "scatter", symbolSize: 20, data: data.efficiency.team_comparison.map(t => ({ name: t.team, value: [t.count, t.avg_hours, t.count], itemStyle: { color: t.avg_hours > 72 ? COLORS.danger : t.avg_hours > 48 ? COLORS.warning : COLORS.success } })), label: { show: true, formatter: "{b}", color: "#fff", fontSize: 9, position: "right" } }],
   };
 
-  // 18. 词云（现象）- 使用矩形树图展示
   const wordCloudPhenOption = {
     ...baseTheme,
     tooltip: { formatter: (p: any) => `${p.name}: ${p.value}次` },
     series: [{ type: "treemap", width: "95%", height: "85%", top: "8%", left: "center", label: { show: true, formatter: "{b}", fontSize: 10, color: "#fff" }, data: data.wordcloud.phenomena.slice(0, 30).map((w, i) => ({ name: w.word, value: w.count, itemStyle: { color: COLORS.chartPalette[i % COLORS.chartPalette.length] } })), levels: [{ itemStyle: { borderWidth: 2, gapWidth: 2 } }] }],
   };
 
-  // 19. 词云（整改）- 使用矩形树图展示
   const wordCloudSolOption = {
     ...baseTheme,
     tooltip: { formatter: (p: any) => `${p.name}: ${p.value}次` },
     series: [{ type: "treemap", width: "95%", height: "85%", top: "8%", left: "center", label: { show: true, formatter: "{b}", fontSize: 10, color: "#fff" }, data: data.wordcloud.solutions.slice(0, 30).map((w, i) => ({ name: w.word, value: w.count, itemStyle: { color: COLORS.chartPalette[i % COLORS.chartPalette.length] } })), levels: [{ itemStyle: { borderWidth: 2, gapWidth: 2 } }] }],
   };
 
-  // 20. 人员红黑榜
   const personOption = {
     ...baseTheme,
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "4%", bottom: "3%", top: "3%", containLabel: true },
-    xAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
-    yAxis: { type: "category", data: data.person_rankings.map(p => p.name).reverse(), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, fontSize: 10 } },
-    series: [{ type: "bar", data: data.person_rankings.map(p => p.count).reverse(), itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: "#7c2d12" }, { offset: 1, color: COLORS.danger }] } }, barWidth: "55%"}],
+    xAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
+    yAxis: { type: "category", data: data.person_rankings.map(p => p.name).reverse(), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, fontSize: 10 } },
+    series: [{ type: "bar", data: data.person_rankings.map(p => p.count).reverse(), itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: "#fce4e6" }, { offset: 1, color: COLORS.danger }] } }, barWidth: "55%"}],
   };
 
-  // 21. 班组雷达
   const teamRadarModes = data.team_radar?.[0]?.indicators?.map(i => i.mode) || [];
   const maxRadarValue = Math.max(30, ...(data.team_radar?.flatMap(t => t.indicators.map(ind => ind.value)) || [30]));
   const teamRadarOption = {
     ...baseTheme,
     tooltip: { trigger: "item" },
-    legend: { bottom: "5%", textStyle: { color: COLORS.muted } },
-    radar: { indicator: teamRadarModes.map(m => ({ name: m, max: maxRadarValue })), shape: "polygon", splitNumber: 4, axisName: { color: COLORS.muted, fontSize: 9 }, splitLine: { lineStyle: { color: COLORS.surfaceHigh } }, splitArea: { areaStyle: { color: [COLORS.surfaceLow, COLORS.background] } } },
+    legend: { bottom: "5%", textStyle: { color: COLORS.onSurfaceVariant } },
+    radar: { indicator: teamRadarModes.map(m => ({ name: m, max: maxRadarValue })), shape: "polygon", splitNumber: 4, axisName: { color: COLORS.onSurfaceVariant, fontSize: 9 }, splitLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, splitArea: { areaStyle: { color: [COLORS.surfaceContainerLow, COLORS.background] } } },
     series: [{ type: "radar", data: data.team_radar?.map((t, i) => ({ name: t.team, value: t.indicators.map(ind => ind.value), itemStyle: { color: COLORS.chartPalette[i % COLORS.chartPalette.length] }, areaStyle: { color: COLORS.chartPalette[i % COLORS.chartPalette.length], opacity: 0.2 } })) || [] }],
   };
 
-  // 22. 车厢位置热力（改用柱状图）
   const trainPosOption = {
     ...baseTheme,
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "4%", bottom: "15%", top: "5%" },
-    xAxis: { type: "category", data: data.train_position_heatmap.map(p => p.position), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, rotate: 30, fontSize: 9 } },
-    yAxis: { type: "value", name: "故障数", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
+    xAxis: { type: "category", data: data.train_position_heatmap.map(p => p.position), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, rotate: 30, fontSize: 9 } },
+    yAxis: { type: "value", name: "故障数", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
     series: [{
       type: "bar",
-      data: data.train_position_heatmap.map(p => ({
-        value: p.count,
-        itemStyle: {
-          color: {
-            type: "linear",
-            x: 0, y: 0, x2: 0, y2: 1,
-            colorStops: [
-              { offset: 0, color: COLORS.danger },
-              { offset: 1, color: COLORS.accent }
-            ]
+      data: data.train_position_heatmap.map(p => {
+        return {
+          value: p.count,
+          itemStyle: {
+            color: {
+              type: "linear",
+              x: 0, y: 0, x2: 0, y2: 1,
+              colorStops: [
+                { offset: 0, color: COLORS.danger },
+                { offset: 1, color: COLORS.accent }
+              ]
+            }
           }
-        }
-      })),
+        };
+      }),
       label: { show: true, position: "top", color: "#fff", fontSize: 10 }
     }],
   };
 
-  // 23. 线路走向网络（简化散点图）
   const lineSegOption = {
     ...baseTheme,
     tooltip: { trigger: "item" },
     grid: { left: "3%", right: "4%", bottom: "15%", top: "5%" },
-    xAxis: { type: "category", data: [...new Set([...data.line_segments.map(s => s.起始位置), ...data.line_segments.map(s => s.终止位置)])].slice(0, 12), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, rotate: 30, fontSize: 9 } },
-    yAxis: { type: "category", data: ["起点", "终点"], axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
+    xAxis: { type: "category", data: [...new Set([...data.line_segments.map(s => s.起始位置), ...data.line_segments.map(s => s.终止位置)])].slice(0, 12), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, rotate: 30, fontSize: 9 } },
+    yAxis: { type: "category", data: ["起点", "终点"], axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
     series: [
       { type: "effectScatter", symbolSize: 18, data: [...new Set(data.line_segments.map(s => s.起始位置))].slice(0, 12).map((p, i) => [i, 0]), rippleEffect: { brushType: "stroke", scale: 3 }, itemStyle: { color: COLORS.chartPalette[0] } },
       { type: "effectScatter", symbolSize: 18, data: [...new Set(data.line_segments.map(s => s.终止位置))].slice(0, 12).map((p, i) => [i, 1]), rippleEffect: { brushType: "stroke", scale: 3 }, itemStyle: { color: COLORS.chartPalette[1] } }
     ],
   };
 
-  // 24. 异常类别饼图
   const anomalyCatOption = {
     ...baseTheme,
     tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
-    legend: { orient: "vertical", right: "2%", top: "center", textStyle: { color: COLORS.muted } },
+    legend: { orient: "vertical", right: "2%", top: "center", textStyle: { color: COLORS.onSurfaceVariant } },
     series: [{ type: "pie", radius: ["40%", "70%"], center: ["40%", "50%"], avoidLabelOverlap: false, itemStyle: { borderColor: COLORS.background, borderWidth: 2 }, label: { show: false }, emphasis: { label: { show: true, fontSize: 13, fontWeight: "bold" } }, data: data.anomaly_categories.map((c, i) => ({ value: c.count, name: c.category, itemStyle: { color: COLORS.chartPalette[i % COLORS.chartPalette.length] } })) }],
   };
 
-  // 25. 工序缺陷爆发率
   const processStepsOption = {
     ...baseTheme,
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "4%", bottom: "3%", top: "3%", containLabel: true },
-    xAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
-    yAxis: { type: "category", data: data.process_steps.map(s => s.step).reverse(), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted, fontSize: 10 } },
-    series: [{ type: "bar", data: data.process_steps.map(s => s.count).reverse(), itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: "#1e3a5f" }, { offset: 1, color: COLORS.danger }] } }, barWidth: "55%"}],
+    xAxis: { type: "value", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
+    yAxis: { type: "category", data: data.process_steps.map(s => s.step).reverse(), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant, fontSize: 10 } },
+    series: [{ type: "bar", data: data.process_steps.map(s => s.count).reverse(), itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 1, y2: 0, colorStops: [{ offset: 0, color: "#fce4e6" }, { offset: 1, color: COLORS.danger }] } }, barWidth: "55%"}],
   };
 
-  // 26. 诊断人负载气泡
   const diagWorkloadOption = {
     ...baseTheme,
     tooltip: { trigger: "item", formatter: "{b}: 工单{c}, 平均{h}小时" },
     grid: { left: "3%", right: "4%", bottom: "10%", top: "5%" },
-    xAxis: { type: "value", name: "工单数", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
-    yAxis: { type: "value", name: "平均时长(h)", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
-    series: [{ type: "scatter", symbolSize: 25, data: data.diagnosis_person_workload.map(d => ({ name: d.name, value: [d.count, d.avg_hours, d.count], itemStyle: { color: d.avg_hours > 48 ? COLORS.danger : COLORS.success } })), label: { show: true, formatter: "{b}", color: "#fff", fontSize: 9, position: "right" } }],
+    xAxis: { type: "value", name: "工单数", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
+    yAxis: { type: "value", name: "平均时长(h)", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
+    series: [{
+      type: "scatter",
+      symbolSize: 25,
+      data: data.diagnosis_person_workload.map(d => ({ name: d.name, value: [d.count, d.avg_hours, d.count], itemStyle: { color: d.avg_hours > 48 ? COLORS.danger : COLORS.success } })),
+      label: { show: true, formatter: "{b}", color: "#fff", fontSize: 9, position: "right" }
+    }],
   };
 
-  // 27. 24小时节律
   const hourlyOption = {
     ...baseTheme,
     tooltip: { trigger: "axis" },
     grid: { left: "3%", right: "4%", bottom: "3%", top: "3%", containLabel: true },
-    xAxis: { type: "category", data: data.hourly_trend.map(h => h.hour + "时"), axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted } },
-    yAxis: { type: "value", name: "异常数", axisLine: { lineStyle: { color: COLORS.surfaceHigh } }, axisLabel: { color: COLORS.muted }, splitLine: { lineStyle: { color: COLORS.surfaceLow } } },
+    xAxis: { type: "category", data: data.hourly_trend.map(h => h.hour + "时"), axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant } },
+    yAxis: { type: "value", name: "异常数", axisLine: { lineStyle: { color: COLORS.surfaceContainerHigh } }, axisLabel: { color: COLORS.onSurfaceVariant }, splitLine: { lineStyle: { color: COLORS.surfaceContainerLow } } },
     series: [{ type: "bar", data: data.hourly_trend.map(h => h.count), itemStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: COLORS.accent }, { offset: 1, color: "#06b6d4" }] } }, barWidth: "60%"}],
   };
 
-  // 28. 图文附件率仪表
   const imageRateOption = {
     ...baseTheme,
     tooltip: { formatter: "{c}%" },
-    series: [{ type: "gauge", center: ["50%", "60%"], radius: "80%", startAngle: 200, endAngle: -20, min: 0, max: 100, splitNumber: 10, itemStyle: { color: COLORS.success }, progress: { show: true, width: 20 }, pointer: { show: true, length: "60%", width: 6 }, axisLine: { lineStyle: { color: [[1, COLORS.surfaceHigh]] } }, axisTick: { show: true, distance: -20, length: 5 }, splitLine: { distance: -20, length: 10 }, axisLabel: { color: COLORS.muted, distance: -30 }, detail: { valueAnimation: true, formatter: "{value}%", color: "#fff", fontSize: 24, offsetCenter: [0, "40%"] }, data: [{ value: data.image_attachment_rate.rate }] }],
+    series: [{ type: "gauge", center: ["50%", "60%"], radius: "80%", startAngle: 200, endAngle: -20, min: 0, max: 100, splitNumber: 10, itemStyle: { color: COLORS.success }, progress: { show: true, width: 20 }, pointer: { show: true, length: "60%", width: 6 }, axisLine: { lineStyle: { color: [[1, COLORS.surfaceContainerHigh]] } }, axisTick: { show: true, distance: -20, length: 5 }, splitLine: { distance: -20, length: 10 }, axisLabel: { color: COLORS.onSurfaceVariant, distance: -30 }, detail: { valueAnimation: true, formatter: "{value}%", color: "#fff", fontSize: 24, offsetCenter: [0, "40%"] }, data: [{ value: data.image_attachment_rate.rate }] }],
   };
 
-  // 29. 返工依据分类
   const reworkBasisOption = {
     ...baseTheme,
     tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
-    legend: { bottom: "5%", textStyle: { color: COLORS.muted } },
+    legend: { bottom: "5%", textStyle: { color: COLORS.onSurfaceVariant } },
     series: [{ type: "pie", radius: ["40%", "70%"], center: ["50%", "50%"], avoidLabelOverlap: false, itemStyle: { borderColor: COLORS.background, borderWidth: 3 }, label: { show: false }, emphasis: { label: { show: true, fontSize: 16, fontWeight: "bold" } }, data: data.rework_basis.map((r, i) => ({ value: r.count, name: r.type, itemStyle: { color: i === 0 ? COLORS.success : COLORS.warning } })) }],
   };
 
   return (
-    <div className="min-h-screen p-3 md:p-4 lg:p-6 bg-[#131313]">
-      {/* 标题栏 */}
-      <header className="mb-6">
-        <h1 className="font-display text-3xl md:text-4xl font-bold text-center text-[#E2E2E2] tracking-tight">
+    <div className="min-h-screen p-4 md:p-6 lg:p-8 bg-[#f8f9fa]">
+      {/* 标题栏 - Editorial Style */}
+      <header className="mb-8">
+        <h1 className="font-display text-3xl md:text-4xl font-semibold text-[#191c1d] tracking-tight" style={{ letterSpacing: "-0.02em" }}>
           校线质量异常分析
         </h1>
-        <div className="flex flex-col items-center mt-4 gap-3">
+        <p className="font-body text-sm text-[#4f4440] mt-2">Ethereal Precision · 数据可视化</p>
+        <div className="flex flex-col items-center mt-6 gap-3">
           <div className="flex items-center gap-4">
             <input ref={fileInputRef} type="file" accept=".xlsx,.xls" onChange={handleFileUpload} className="hidden" />
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="px-5 py-2.5 font-body text-sm font-medium text-white btn-primary rounded-none transition-all duration-300 flex items-center gap-2"
+              className="px-5 py-2.5 font-body text-sm font-medium text-white rounded-lg transition-all duration-300 btn-primary flex items-center gap-2"
             >
               {uploading ? (
                 <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -590,101 +554,101 @@ export default function DashboardPage() {
             </button>
             <button
               onClick={fetchData}
-              className="px-5 py-2.5 font-body text-sm font-medium text-white bg-[#494646] hover:bg-[#5a5555] rounded-none transition-all duration-300"
+              className="px-5 py-2.5 font-body text-sm font-medium text-[#9a0011] rounded-lg transition-all duration-300 btn-secondary"
             >
               刷新数据
             </button>
           </div>
           {uploadStatus && (
-            <p className={`text-xs font-body ${uploadStatus.includes("成功") ? "text-[#10b981]" : "text-[#ef4444]"}`}>
+            <p className={`text-xs font-body ${uploadStatus.includes("成功") ? "text-[#10b981]" : "text-[#c70019]"}`}>
               {uploadStatus}
             </p>
           )}
         </div>
       </header>
 
-      {/* KPI卡片 - 使用背景色差实现No-Line效果 */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-0 mb-6">
+      {/* KPI卡片 - No-Line效果，通过背景色差分层 */}
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-0 mb-8">
         {kpiCards.map((card, i) => (
           <div
             key={i}
-            className={`p-5 ${i === 0 ? "bg-[#1B1B1B]" : i === 2 ? "bg-[#242424]" : "bg-[#2A2A2A]"}`}
-            style={{ boxShadow: i === 0 ? "inset 0 0 0 1px rgba(255,255,255,0.03)" : "none" }}
+            className={`p-6 ${i === 0 ? "bg-[#ffffff]" : i === 2 ? "bg-[#f3f4f5]" : "bg-[#ebecef]"}`}
+            style={{ borderRadius: "8px" }}
           >
-            <p className="text-[#B8B8B8] text-xs font-body mb-2 tracking-wide">{card.label}</p>
-            <p className="text-3xl md:text-4xl font-display font-bold text-[#E2E2E2]">
+            <p className="text-[#4f4440] text-xs font-body mb-2 tracking-wide label-uppercase">{card.label}</p>
+            <p className="text-3xl md:text-4xl font-display font-semibold text-[#191c1d]">
               {typeof card.value === 'number' ? card.value.toLocaleString() : card.value}
-              <span className="text-xs text-[#B8B8B8] ml-1 font-body">{card.unit}</span>
+              <span className="text-xs text-[#4f4440] ml-1 font-body">{card.unit}</span>
             </p>
-            <div className="mt-2 h-0.5 w-8 bg-gradient-to-r from-[#C70019] to-transparent"></div>
+            <div className="mt-3 h-0.5 w-12 bg-gradient-to-r from-[#c70019] to-transparent" style={{ borderRadius: "2px" }}></div>
           </div>
         ))}
       </section>
 
       {/* 第一行 */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-0 mb-4">
-        <div className="bg-[#1B1B1B] p-4">
-          <h2 className="text-sm font-display font-semibold mb-3 text-[#3b82f6] tracking-wide">每节车平均异常数量（SPC）</h2>
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="bg-[#ffffff] p-5 rounded-lg">
+          <h2 className="text-sm font-display font-medium mb-3 text-[#c70019] tracking-wide">每节车平均异常数量（SPC）</h2>
           <ReactECharts option={perCarTrendOption} style={{ height: "220px" }} />
         </div>
-        <div className="bg-[#242424] p-4">
-          <h2 className="text-sm font-display font-semibold mb-3 text-[#10b981] tracking-wide">项目分布</h2>
+        <div className="bg-[#f3f4f5] p-5 rounded-lg">
+          <h2 className="text-sm font-display font-medium mb-3 text-[#825154] tracking-wide">项目分布</h2>
           <ReactECharts option={projectOption} style={{ height: "320px" }} />
         </div>
-        <div className="bg-[#1B1B1B] p-4">
-          <h2 className="text-sm font-display font-semibold mb-3 text-[#8b5cf6] tracking-wide">故障频发列车 Top10</h2>
+        <div className="bg-[#ffffff] p-5 rounded-lg">
+          <h2 className="text-sm font-display font-medium mb-3 text-[#3b82f6] tracking-wide">故障频发列车 Top10</h2>
           <ReactECharts option={trainOption} style={{ height: "220px" }} />
         </div>
       </section>
 
       {/* 第二行 */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-0 mb-4">
-        <div className="bg-[#242424] p-4">
-          <h2 className="text-sm font-display font-semibold mb-3 text-[#f59e0b] tracking-wide">现象分类帕累托</h2>
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="bg-[#f3f4f5] p-5 rounded-lg">
+          <h2 className="text-sm font-display font-medium mb-3 text-[#8b5cf6] tracking-wide">现象分类帕累托</h2>
           <ReactECharts option={phenomenonOption} style={{ height: "260px" }} />
         </div>
-        <div className="bg-[#1B1B1B] p-4">
-          <h2 className="text-sm font-display font-semibold mb-3 text-[#06b6d4] tracking-wide">核心失效模式(帕累托)</h2>
+        <div className="bg-[#ffffff] p-5 rounded-lg">
+          <h2 className="text-sm font-display font-medium mb-3 text-[#06b6d4] tracking-wide">核心失效模式(帕累托)</h2>
           <ReactECharts option={failureModeOption} style={{ height: "260px" }} />
         </div>
       </section>
 
       {/* 第三行 */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-0 mb-4">
-        <div className="bg-[#1B1B1B] p-4">
-          <h2 className="text-sm font-display font-semibold mb-3 text-[#C70019] tracking-wide">失效原因帕累托</h2>
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="bg-[#ffffff] p-5 rounded-lg">
+          <h2 className="text-sm font-display font-medium mb-3 text-[#c70019] tracking-wide">失效原因帕累托</h2>
           <ReactECharts option={failureCauseOption} style={{ height: "260px" }} />
         </div>
-        <div className="bg-[#242424] p-4">
-          <h2 className="text-sm font-display font-semibold mb-3 text-[#f59e0b] tracking-wide">各项目缺失项统计</h2>
+        <div className="bg-[#f3f4f5] p-5 rounded-lg">
+          <h2 className="text-sm font-display font-medium mb-3 text-[#f59e0b] tracking-wide">各项目缺失项统计</h2>
           <ReactECharts option={missingByProjectOption} style={{ height: "260px" }} />
         </div>
       </section>
 
       {/* 第四行：失效原因与Top诊断人表格 */}
-      <section className="mb-4">
-        <div className="bg-[#2A2A2A] p-5">
-          <h2 className="text-sm font-display font-semibold mb-4 text-[#06b6d4] tracking-wide">各失效原因Top10诊断人</h2>
+      <section className="mb-6">
+        <div className="bg-[#ebecef] p-6 rounded-lg">
+          <h2 className="text-sm font-display font-medium mb-4 text-[#06b6d4] tracking-wide">各失效原因Top10诊断人</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-xs font-body">
               <thead>
-                <tr className="text-[#B8B8B8] border-b border-[#353535]">
-                  <th className="px-3 py-3 text-left w-48">失效原因</th>
-                  <th className="px-3 py-3 text-center w-20">总数</th>
+                <tr className="text-[#4f4440] border-b border-[#d4d7d9]">
+                  <th className="px-4 py-3 text-left w-48 font-medium">失效原因</th>
+                  <th className="px-4 py-3 text-center w-20 font-medium">总数</th>
                   {Array.from({ length: 10 }, (_, i) => (
-                    <th key={i} className="px-3 py-3 text-center min-w-24">Top{i + 1}</th>
+                    <th key={i} className="px-4 py-3 text-center min-w-24 font-medium">Top{i + 1}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {data.failure_cause_rectifiers.map((row, idx) => (
-                  <tr key={idx} className="border-b border-[#353535]/50 hover:bg-[#353535]/30 transition-colors">
-                    <td className="px-3 py-3 text-[#E2E2E2] text-left" title={row.cause}>{row.cause.length > 20 ? row.cause.slice(0, 20) + '...' : row.cause}</td>
-                    <td className="px-3 py-3 text-center text-[#f59e0b]">{row.total_count}</td>
+                  <tr key={idx} className="border-b border-[#ebecef] hover:bg-[#f3f4f5] transition-colors">
+                    <td className="px-4 py-3 text-[#191c1d] text-left font-medium" title={row.cause}>{row.cause.length > 20 ? row.cause.slice(0, 20) + '...' : row.cause}</td>
+                    <td className="px-4 py-3 text-center text-[#c70019] font-semibold">{row.total_count}</td>
                     {Array.from({ length: 10 }, (_, i) => {
                       const person = row.persons[i];
                       return (
-                        <td key={i} className="px-3 py-3 text-center text-[#B8B8B8]">
+                        <td key={i} className="px-4 py-3 text-center text-[#4f4440]">
                           {person ? `${person.name} (${person.count})` : '-'}
                         </td>
                       );
@@ -698,29 +662,29 @@ export default function DashboardPage() {
       </section>
 
       {/* 第五行：责任单位与Top诊断人表格 */}
-      <section className="mb-4">
-        <div className="bg-[#242424] p-5">
-          <h2 className="text-sm font-display font-semibold mb-4 text-[#8b5cf6] tracking-wide">各责任单位Top10诊断人</h2>
+      <section className="mb-6">
+        <div className="bg-[#f3f4f5] p-6 rounded-lg">
+          <h2 className="text-sm font-display font-medium mb-4 text-[#825154] tracking-wide">各责任单位Top10诊断人</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-xs font-body">
               <thead>
-                <tr className="text-[#B8B8B8] border-b border-[#353535]">
-                  <th className="px-3 py-3 text-left w-48">责任单位</th>
-                  <th className="px-3 py-3 text-center w-20">总数</th>
+                <tr className="text-[#4f4440] border-b border-[#d4d7d9]">
+                  <th className="px-4 py-3 text-left w-48 font-medium">责任单位</th>
+                  <th className="px-4 py-3 text-center w-20 font-medium">总数</th>
                   {Array.from({ length: 10 }, (_, i) => (
-                    <th key={i} className="px-3 py-3 text-center min-w-24">Top{i + 1}</th>
+                    <th key={i} className="px-4 py-3 text-center min-w-24 font-medium">Top{i + 1}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {data.responsibility_diagnosis_persons.map((row, idx) => (
-                  <tr key={idx} className="border-b border-[#353535]/50 hover:bg-[#353535]/30 transition-colors">
-                    <td className="px-3 py-3 text-[#E2E2E2] text-left" title={row.unit}>{row.unit.length > 20 ? row.unit.slice(0, 20) + '...' : row.unit}</td>
-                    <td className="px-3 py-3 text-center text-[#f59e0b]">{row.total_count}</td>
+                  <tr key={idx} className="border-b border-[#f3f4f5] hover:bg-[#ebecef] transition-colors">
+                    <td className="px-4 py-3 text-[#191c1d] text-left font-medium" title={row.unit}>{row.unit.length > 20 ? row.unit.slice(0, 20) + '...' : row.unit}</td>
+                    <td className="px-4 py-3 text-center text-[#c70019] font-semibold">{row.total_count}</td>
                     {Array.from({ length: 10 }, (_, i) => {
                       const person = row.persons[i];
                       return (
-                        <td key={i} className="px-3 py-3 text-center text-[#B8B8B8]">
+                        <td key={i} className="px-4 py-3 text-center text-[#4f4440]">
                           {person ? `${person.name} (${person.count})` : '-'}
                         </td>
                       );
@@ -734,8 +698,8 @@ export default function DashboardPage() {
       </section>
 
       <footer className="mt-8 text-center">
-        <p className="text-[#666] text-xs font-body tracking-wide">
-          校线质量异常分析系统 | 共 {data.kpi.total_anomalies} 条异常 | 缺失 {data.missing_stats.missing_count} 条 | 更新: {new Date().toLocaleString()}
+        <p className="text-[#81736c] text-xs font-body tracking-wide">
+          校线质量异常分析系统 · Ethereal Precision | 共 {data.kpi.total_anomalies} 条异常 | 缺失 {data.missing_stats.missing_count} 条 | 更新: {new Date().toLocaleString()}
         </p>
       </footer>
     </div>

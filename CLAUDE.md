@@ -44,8 +44,8 @@ cd backend
 ### 前端启动
 ```bash
 cd frontend
-npm run dev -- --port 3001
-# 访问: http://localhost:3001
+npm run dev -- --port 3002
+# 访问: http://localhost:3002
 ```
 
 ## 关键数据处理规则
