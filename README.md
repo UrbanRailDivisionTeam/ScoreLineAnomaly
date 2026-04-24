@@ -2,9 +2,66 @@
 
 基于 Python FastAPI + Next.js 的校线质量异常数据可视化分析系统。支持数据上传、统计分析和 SPC 过程监控。
 
-## 界面预览
+## 技术架构
 
-![校线质量异常分析大屏](screenshot_fullpage.png)
+```
+Excel数据 → Python后端(FastAPI) → Next.js前端(ECharts大屏)
+```
+
+| 层级 | 技术 | 版本 |
+|------|------|------|
+| 后端框架 | FastAPI | - |
+| Python | Python | 3.11+ |
+| 数据处理 | Pandas | - |
+| 服务 | Uvicorn | - |
+| 前端框架 | Next.js | 16.2.3 |
+| UI库 | React | 19 |
+| 样式 | Tailwind CSS | v4 |
+| 图表 | ECharts | - |
+
+## 快速启动
+
+### 1. 启动后端
+
+```bash
+cd backend
+.venv\Scripts\python -m uvicorn main:app --host 127.0.0.1 --port 8001
+# API文档: http://localhost:8001/docs
+```
+
+### 2. 启动前端
+
+```bash
+cd frontend
+npm run dev -- --port 3002
+# 访问: http://localhost:3002
+```
+
+## 项目结构
+
+```
+.
+├── backend/                         # Python FastAPI 后端
+│   ├── main.py                      # FastAPI 入口、生命周期管理
+│   ├── requirements.txt            # Python 依赖
+│   ├── routers/
+│   │   └── analysis.py             # 分析 API 路由（30+ 接口）
+│   └── services/
+│       ├── data_processor.py       # 数据处理服务
+│       └── work_hours.py           # 有效工作时长计算
+├── frontend/                        # Next.js 前端
+│   ├── app/
+│   │   ├── page.tsx               # 主仪表盘页面
+│   │   ├── layout.tsx             # 布局组件
+│   │   └── globals.css            # 全局样式
+│   ├── package.json               # Node 依赖
+│   └── next.config.ts
+├── scripts/                         # 启动脚本
+│   ├── 启动校线分析系统.bat
+│   └── 停止校线分析系统.bat
+├── CLAUDE.md                       # Claude Code 项目指引
+└── README.md                       # 本文档
+```
 
 ## 功能特性
 
@@ -53,57 +110,6 @@
 - 图文附件率仪表
 - 返工依据分类
 
-## 技术架构
-
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Excel数据      │ --> │   Python后端     │ --> │   Next.js前端   │
-│  (.xlsx/.xls)   │     │   (FastAPI)      │     │   (ECharts)     │
-│                 │     │   端口: 8001      │     │   端口: 3002     │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-```
-
-### 技术栈
-
-| 层级 | 技术 | 版本 |
-|------|------|------|
-| 后端框架 | FastAPI | - |
-| Python | Python | 3.11+ |
-| 数据处理 | Pandas | - |
-| 服务 | Uvicorn | - |
-| 前端框架 | Next.js | 16.2.3 |
-| UI库 | React | 19 |
-| 样式 | Tailwind CSS | v4 |
-| 图表 | ECharts | - |
-
-## 快速启动
-
-### 方式一：使用快捷方式（推荐）
-
-双击桌面快捷方式：
-
-| 快捷方式 | 功能 |
-|---------|------|
-| **RailAnalysis-Start.lnk** | 启动后端+前端，自动打开浏览器 |
-| **RailAnalysis-Stop.lnk** | 停止所有服务 |
-
-### 方式二：手动启动
-
-**1. 启动后端**
-```bash
-cd backend
-.venv\Scripts\python -m uvicorn main:app --host 127.0.0.1 --port 8001
-```
-
-**2. 启动前端**
-```bash
-cd frontend
-npm run dev -- --port 3002
-```
-
-**3. 打开浏览器**
-访问 http://localhost:3002
-
 ## API 接口
 
 访问 http://localhost:8001/docs 查看完整 API 文档。
@@ -114,7 +120,6 @@ npm run dev -- --port 3002
 |------|------|------|
 | `/api/full-analysis` | GET | 完整分析数据（所有指标） |
 | `/api/kpi` | GET | 核心 KPI 指标 |
-| `/api/per-car-trend` | GET | 每节车平均异常数量（SPC） |
 | `/api/upload` | POST | 上传 Excel 数据文件 |
 
 ### 独立接口
@@ -195,32 +200,6 @@ npm run dev -- --port 3002
 
 ### 报警规则
 - 超限点（> UCL 或 < LCL）自动标记红色
-
-## 项目结构
-
-```
-.
-├── backend/                         # Python FastAPI 后端
-│   ├── main.py                     # FastAPI 入口、生命周期管理
-│   ├── requirements.txt            # Python 依赖
-│   ├── routers/
-│   │   └── analysis.py             # 分析 API 路由（30+ 接口）
-│   └── services/
-│       ├── data_processor.py       # 数据处理服务
-│       └── work_hours.py          # 有效工作时长计算
-├── frontend/                        # Next.js 前端
-│   ├── app/
-│   │   ├── page.tsx               # 主仪表盘页面
-│   │   ├── layout.tsx             # 布局组件
-│   │   └── globals.css            # 全局样式
-│   └── package.json               # Node 依赖
-├── scripts/                         # 启动脚本
-│   ├── 启动校线分析系统.bat        # 启动脚本
-│   └── 停止校线分析系统.bat        # 停止脚本
-├── CLAUDE.md                      # Claude Code 项目指引
-├── DESIGN.md                      # 设计规范文档
-└── README.md                      # 本文档
-```
 
 ## 环境要求
 
